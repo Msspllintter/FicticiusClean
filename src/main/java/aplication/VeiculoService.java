@@ -81,6 +81,6 @@ public class VeiculoService {
  	}
 
 
-  return Response.status(Response.Status.OK).entity("O nome do contato é obrigatório").build();
+  return Response.status(Response.Status.OK).entity("Veiculo Cadastrado com Sucesso").build();
  }
 }
