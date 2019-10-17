@@ -23,7 +23,7 @@ public class VeiculoService {
  @GET
  @Produces(MediaType.APPLICATION_JSON)
  @Path("/getLista")
- public String getLista(@PathParam("preco") String paramPreco, @PathParam("kmCidade") String paramKmCidade, @PathParam("kmCidade") String paramKmEstrada) {
+ public String getLista(@PathParam("preco") String paramPreco, @PathParam("kmCidade") String paramKmCidade, @PathParam("kmEstrada") String paramKmEstrada) {
 	 int kmCidade = 0;
 	 int kmEstrada = 0;
 	 Double preco = 0.00;
