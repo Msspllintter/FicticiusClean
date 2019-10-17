@@ -1,108 +1,118 @@
-# ws serverless API
-The ws project, created with [`aws-serverless-java-container`](https://github.com/awslabs/aws-serverless-java-container).
+Projeto FicticiusClean
 
-The starter project defines a simple `/ping` resource that can accept `GET` requests with its tests.
+O projeto foi desenvolvido e testadoo utilizando o servidor TomCat v7.0.
+O primeiro passo é adicionar os servlets:
 
-The project folder also includes a `sam.yaml` file. You can use this [SAM](https://github.com/awslabs/serverless-application-model) file to deploy the project to AWS Lambda and Amazon API Gateway or test in local with [SAM Local](https://github.com/awslabs/aws-sam-local). 
+ 	<servlet-mapping>
+ 		<servlet-name>getLista</servlet-name>
+ 			<url-pattern>/getLista</url-pattern>
+ 	</servlet-mapping>
+    <servlet-mapping>
+ 	    <servlet-name>cadastroVeiculo</servlet-name>
+ 			<url-pattern>/cadastroVeiculo</url-pattern>
+ 	</servlet-mapping>
 
-Using [Maven](https://maven.apache.org/), you can create an AWS Lambda-compatible zip file simply by running the maven package command from the project folder.
-```bash
-$ mvn archetype:generate -DartifactId=ws -DarchetypeGroupId=com.amazonaws.serverless.archetypes -DarchetypeArtifactId=aws-serverless-jersey-archetype -DarchetypeVersion=1.4 -DgroupId=FicticiusClean -Dversion=0.0.1-SNAPSHOT -Dinteractive=false
-$ cd ws
-$ mvn clean package
+Ao levantat o serviço o padrão é ser utilizado a porta 8080.
+EXEMPLO:
 
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 6.546 s
-[INFO] Finished at: 2018-02-15T08:39:33-08:00
-[INFO] Final Memory: XXM/XXXM
-[INFO] ------------------------------------------------------------------------
-```
+http://localhost:8080/
 
-You can use [AWS SAM Local](https://github.com/awslabs/aws-sam-local) to start your project.
 
-First, install SAM local:
 
-```bash
-$ npm install -g aws-sam-local
-```
+Inicialmente existem duas APIs no projetos sendo eles:
 
-Next, from the project root folder - where the `sam.yaml` file is located - start the API with the SAM Local CLI.
+Para cadastro de veiculos, onde deve receber alguns parametros para o novo cadastro.
+EXEMPLO:
+METODO: POST
+URL:
+    http://localhost:8080/cadastroVeiculo
+PARAMETROS:
 
-```bash
-$ sam local start-api --template sam.yaml
+  "consumoCidade": "1000.1",
+  "consumoEstrada": "100",
+  "nome": "CarroExemplo",
+  "marca": "MarcaExemplo",
+  "modelo": "ModeloExemplo",
+  "dataFabricacao": "01/01/2000"
+  
+  Caso o cadastro seja efetuado com sucesso o retorno será status 200 com a mensagem "Veiculo Cadastrado com Sucesso".
+  
+  
+  
+  
+  Para consulta da lista de veiculos, o retorno esta ordenado por custo, do menos para o maior.
+EXEMPLO:
+METODO: GET
+URL:
+    http://localhost:8080/getLista?preco=2.00&kmCidade=200&kmEstrada=100
+PARAMETROS:
 
-...
-Mounting com.amazonaws.serverless.archetypes.StreamLambdaHandler::handleRequest (java8) at http://127.0.0.1:3000/{proxy+} [OPTIONS GET HEAD POST PUT DELETE PATCH]
-...
-```
+  "preco": "2.00",
+  "kmCidade": "200",
+  "kmEstrada": "100".
+  
+  o retorno com o codigo 200 e o resultado esperado é um Json.
+  EXEMPLO:
+  
+  [
+  {
+    "custo": 4.8,
+    "combustivel": 2,
+    "nome": "teste1",
+    "marca": "marca",
+    "modelo": "modelo",
+    "dataFabricacao": 2000
+  },
+  {
+    "custo": 17.14,
+    "combustivel": 7.14,
+    "nome": "teste2",
+    "marca": "marca",
+    "modelo": "modelo",
+    "dataFabricacao": 2000
+  },
+  {
+    "custo": 25.26,
+    "combustivel": 10.53,
+    "nome": "teste3",
+    "marca": "marca",
+    "modelo": "modelo",
+    "dataFabricacao": 2000
+  },
+  {
+    "custo": 34.29,
+    "combustivel": 14.29,
+    "nome": "teste4",
+    "marca": "marca",
+    "modelo": "modelo",
+    "dataFabricacao": 2000
+  },
+  {
+    "custo": 34.29,
+    "combustivel": 14.29,
+    "nome": "teste5",
+    "marca": "marca",
+    "modelo": "modelo",
+    "dataFabricacao": 2000
+  },
+  {
+    "custo": 480,
+    "combustivel": 200,
+    "nome": "teste6",
+    "marca": "marca",
+    "modelo": "modelo",
+    "dataFabricacao": 2000
+  }
+]
+  
+  
+  
+  
+  
+  Quaisquer duvidas estou a disposição.
+  
 
-Using a new shell, you can send a test ping request to your API:
+  
+  
+  
 
-```bash
-$ curl -s http://127.0.0.1:3000/ping | python -m json.tool
-
-{
-    "pong": "Hello, World!"
-}
-``` 
-
-You can use the [AWS CLI](https://aws.amazon.com/cli/) to quickly deploy your application to AWS Lambda and Amazon API Gateway with your SAM template.
-
-You will need an S3 bucket to store the artifacts for deployment. Once you have created the S3 bucket, run the following command from the project's root folder - where the `sam.yaml` file is located:
-
-```
-$ aws cloudformation package --template-file sam.yaml --output-template-file output-sam.yaml --s3-bucket <YOUR S3 BUCKET NAME>
-Uploading to xxxxxxxxxxxxxxxxxxxxxxxxxx  6464692 / 6464692.0  (100.00%)
-Successfully packaged artifacts and wrote output template to file output-sam.yaml.
-Execute the following command to deploy the packaged template
-aws cloudformation deploy --template-file /your/path/output-sam.yaml --stack-name <YOUR STACK NAME>
-```
-
-As the command output suggests, you can now use the cli to deploy the application. Choose a stack name and run the `aws cloudformation deploy` command from the output of the package command.
- 
-```
-$ aws cloudformation deploy --template-file output-sam.yaml --stack-name ServerlessJerseyApi --capabilities CAPABILITY_IAM
-```
-
-Once the application is deployed, you can describe the stack to show the API endpoint that was created. The endpoint should be the `ServerlessJerseyApi` key of the `Outputs` property:
-
-```
-$ aws cloudformation describe-stacks --stack-name ServerlessJerseyApi
-{
-    "Stacks": [
-        {
-            "StackId": "arn:aws:cloudformation:us-west-2:xxxxxxxx:stack/ServerlessJerseyApi/xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx", 
-            "Description": "AWS Serverless Jersey API - com.amazonaws.serverless.archetypes::aws-serverless-jersey-archetype", 
-            "Tags": [], 
-            "Outputs": [
-                {
-                    "Description": "URL for application",
-                    "ExportName": "WsApi",
-                    "OutputKey": "WsApi",
-                    "OutputValue": "https://xxxxxxx.execute-api.us-west-2.amazonaws.com/Prod/ping"
-                }
-            ], 
-            "CreationTime": "2016-12-13T22:59:31.552Z", 
-            "Capabilities": [
-                "CAPABILITY_IAM"
-            ], 
-            "StackName": "ServerlessJerseyApi", 
-            "NotificationARNs": [], 
-            "StackStatus": "UPDATE_COMPLETE"
-        }
-    ]
-}
-
-```
-
-Copy the `OutputValue` into a browser or use curl to test your first request:
-
-```bash
-$ curl -s https://xxxxxxx.execute-api.us-west-2.amazonaws.com/Prod/ping | python -m json.tool
-
-{
-    "pong": "Hello, World!"
-}
-```
